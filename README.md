@@ -1,8 +1,9 @@
 packer-templates
 ================
 
-packer-templates to create vmware_ovf templates for the following distros.
+packer-templates to create vmware_ovf and virtualbox templates for the following distros.
 
-Oracle Enterprise Linux 6.6 x64
-
-Ubuntu 14.04 LTS x64
+1) Oracle Enterprise Linux 6.6 x64
+  a) system packages are updated.
+  b) vm guest tools are installed and rpm prerequisites cleaned up.
+  c) puppet is installed and used to configure vagrant requirements.
