@@ -5,11 +5,11 @@
   "builders": [
     {
       "type": "vmware-iso",
-      "name": "oel66-ovf-x64",
+      "name": "oel66-x64-ovf",
       "vm_name": "oel66-x64",
       "vmdk_name": "oel66-x64-disk0",
       "headless": true,
-      "disk_size": 16384,
+      "disk_size": 8192,
       "guest_os_type": "rhel6-64",
       "iso_url": "file:///Volumes/Storage/Isos/Oracle-Linux-6.6-x86_64.iso",
       "iso_checksum": "5738F10A506D3630EDFD297EF179B553091C6A48",
@@ -21,15 +21,15 @@
       "http_directory": ".",
       "tools_upload_flavor": "linux",
       "boot_command": [
-        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/centos-6-kickstart.cfg<enter><wait>"
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/oel/oel-6-kickstart.cfg<enter><wait>"
       ]
     },
     {
       "type": "virtualbox-iso",
-      "name": "oel66-vbox-x64",
+      "name": "oel66-x64-vbox",
       "vm_name": "oel66-x64",
       "headless": true,
-      "disk_size": 16384,
+      "disk_size": 8192,
       "guest_os_type": "RedHat_64",
       "iso_url": "file:///Volumes/Storage/Isos/Oracle-Linux-6.6-x86_64.iso",
       "iso_checksum": "5738F10A506D3630EDFD297EF179B553091C6A48",
@@ -40,7 +40,7 @@
       "shutdown_command": "echo 'vagrant' | sudo -S /sbin/shutdown -P now",
       "http_directory": ".",
       "boot_command": [
-        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/centos-6-kickstart.cfg<enter><wait>"
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/oel/oel-6-kickstart.cfg<enter><wait>"
       ],
       "virtualbox_version_file": ".vbox_version",
       "vboxmanage": [
@@ -59,11 +59,11 @@
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "override": {
-        "oel66-ovf-x64": {
-          "script": "scripts/centos-vmware-tools_install.sh"
+        "oel66-x64-ovf": {
+          "script": "scripts/oel/oel-vmware-tools_install.sh"
         },
-        "oel66-vbox-x64": {
-          "script": "scripts/oel-virtualbox-guest-additions_install.sh"          
+        "oel66-x64-vbox": {
+          "script": "scripts/oel/oel-virtualbox-guest-additions_install.sh"          
         }
       }
     },
@@ -79,21 +79,19 @@
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
-      "script": "scripts/centos-vmware-vcloud_cleanup.sh",
-      "only": ["oel66-ovf-x64"]
+      "script": "scripts/oel/oel_cleanup.sh"
     }
   ],
 
   "post-processors": [
    {
      "type": "vagrant",
-     "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box",
-     "only": ["oel66-vbox-x64"]
+     "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box"
    },
    {
      "type": "vagrant-vmware-ovf",
      "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box",
-     "only": ["oel66-ovf-x64"]
+     "only": ["oel66-x64-ovf"]
    }
   ]
 }
