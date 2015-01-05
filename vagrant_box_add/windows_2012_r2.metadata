@@ -1,0 +1,15 @@
+{
+  "name": "packer-windows-2012-r2-x64",
+  "description": "This box contains Windows 2012 R2 64-bit.",
+  "versions": [{
+    "version": "0.0.1",
+    "providers": [
+      {
+        "name": "vmware_ovf",
+        "url": "file:///Users/pieriglesaux/GIT/lesaux-packer-templates/windows-2012-r2-x64-ovf-vmware_ovf-0.0.1.box",
+        "checksum_type": "md5",
+        "checksum": "35a858815e65eb88ffba2e380aaca8ee"
+      }
+    ]
+  }]
+}
