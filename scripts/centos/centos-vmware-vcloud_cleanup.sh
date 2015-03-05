@@ -3,6 +3,8 @@
 # (http://lonesysadmin.net/2013/03/26/preparing-linux-template-vms/) article
 # by Bob Plankers, thanks Bob!
 
+yum install -y bc
+
 CLEANUP_PAUSE=${CLEANUP_PAUSE:-0}
 echo "==> Pausing for ${CLEANUP_PAUSE} seconds..."
 sleep ${CLEANUP_PAUSE}
@@ -39,12 +41,13 @@ echo "==> Installed packages"
 rpm -qa
 
 # Determine the version of RHEL
-COND=`grep -i Taroon /etc/redhat-release`
-if [ "$COND" = "" ]; then
-        export PREFIX="/usr/sbin"
-else
-        export PREFIX="/sbin"
-fi
+#COND=`grep -i Taroon /etc/redhat-release`
+#if [ "$COND" = "" ]; then
+#        export PREFIX="/usr/sbin"
+#else
+#        export PREFIX="/sbin"
+#fi
+export PREFIX="/sbin"
 
 FileSystem=`grep ext /etc/mtab| awk -F" " '{ print $2 }'`
 

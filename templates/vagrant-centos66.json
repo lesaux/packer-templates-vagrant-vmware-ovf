@@ -5,14 +5,14 @@
   "builders": [
     {
       "type": "vmware-iso",
-      "name": "oel66-x64-ovf",
-      "vm_name": "oel66-x64",
-      "vmdk_name": "oel66-x64-disk0",
-      "headless": true,
-      "disk_size": 8192,
+      "name": "centos66-ovf-x64",
+      "vm_name": "centos66-x64",
+      "vmdk_name": "centos66-x64-disk0",
+      "headless": false,
+      "disk_size": 16384,
       "guest_os_type": "rhel6-64",
-      "iso_url": "file:///Volumes/Storage/Isos/Oracle-Linux-6.6-x86_64.iso",
-      "iso_checksum": "5738F10A506D3630EDFD297EF179B553091C6A48",
+      "iso_url": "file:///Volumes/Storage/Isos/CentOS/CentOS-6.6-x86_64-bin-DVD1.iso",
+      "iso_checksum": "08be09fd7276822bd3468af8f96198279ffc41f0",
       "iso_checksum_type": "sha1",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
@@ -21,18 +21,18 @@
       "http_directory": ".",
       "tools_upload_flavor": "linux",
       "boot_command": [
-        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/oel/oel-6-kickstart.cfg<enter><wait>"
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/centos/vagrant-centos-6-kickstart.cfg<enter><wait>"
       ]
     },
     {
       "type": "virtualbox-iso",
-      "name": "oel66-x64-vbox",
-      "vm_name": "oel66-x64",
-      "headless": true,
-      "disk_size": 8192,
+      "name": "centos66-vbox-x64",
+      "vm_name": "centos66-x64",
+      "headless": false,
+      "disk_size": 16384,
       "guest_os_type": "RedHat_64",
-      "iso_url": "file:///Volumes/Storage/Isos/Oracle-Linux-6.6-x86_64.iso",
-      "iso_checksum": "5738F10A506D3630EDFD297EF179B553091C6A48",
+      "iso_url": "file:///Volumes/Storage/Isos/CentOS/CentOS-6.6-x86_64-bin-DVD1.iso",
+      "iso_checksum": "08be09fd7276822bd3468af8f96198279ffc41f0",
       "iso_checksum_type": "sha1",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
@@ -40,7 +40,7 @@
       "shutdown_command": "echo 'vagrant' | sudo -S /sbin/shutdown -P now",
       "http_directory": ".",
       "boot_command": [
-        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/oel/oel-6-kickstart.cfg<enter><wait>"
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/centos/vagrant-centos-6-kickstart.cfg<enter><wait>"
       ],
       "virtualbox_version_file": ".vbox_version",
       "vboxmanage": [
@@ -53,17 +53,17 @@
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
-      "script": "scripts/yum-updates.sh"
+      "script": "scripts/centos/yum-updates.sh"
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "override": {
-        "oel66-x64-ovf": {
-          "script": "scripts/oel/oel-vmware-tools_install.sh"
+        "centos66-ovf-x64": {
+          "script": "scripts/centos/centos-vmware-tools_install.sh"
         },
-        "oel66-x64-vbox": {
-          "script": "scripts/oel/oel-virtualbox-guest-additions_install.sh"          
+        "centos66-vbox-x64": {
+          "script": "scripts/centos/centos-virtualbox-guest-additions_install.sh"          
         }
       }
     },
@@ -79,19 +79,21 @@
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
-      "script": "scripts/oel/oel_cleanup.sh"
+      "script": "scripts/centos/centos-vmware-vcloud_cleanup.sh",
+      "only": ["centos66-ovf-x64"]
     }
   ],
 
   "post-processors": [
    {
      "type": "vagrant",
-     "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box"
+     "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box",
+     "only": ["centos66-vbox-x64"]
    },
    {
      "type": "vagrant-vmware-ovf",
      "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box",
-     "only": ["oel66-x64-ovf"]
+     "only": ["centos66-ovf-x64"]
    }
   ]
 }
