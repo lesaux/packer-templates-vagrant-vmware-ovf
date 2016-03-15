@@ -1,5 +1,2 @@
 packer_cache
-oel66-x64-ovf-vmware-0.0.1.box
-oel66-x64-ovf-vmware_ovf-0.0.1.box
-oel66-x64-vbox-virtualbox-0.0.1.box
-windows-2012-r2-x64-ovf-vmware_ovf-0.0.1.box
+*.box

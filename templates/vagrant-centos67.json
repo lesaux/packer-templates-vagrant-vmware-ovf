@@ -5,15 +5,16 @@
   "builders": [
     {
       "type": "vmware-iso",
-      "name": "centos66-ovf-x64",
-      "vm_name": "centos66-x64",
-      "vmdk_name": "centos66-x64-disk0",
+      "name": "centos67-ovf-x64",
+      "vm_name": "centos67-x64",
+      "vmdk_name": "centos67-x64-disk0",
       "headless": false,
       "disk_size": 16384,
       "guest_os_type": "rhel6-64",
-      "iso_url": "file:///Volumes/Storage/Isos/CentOS/CentOS-6.6-x86_64-bin-DVD1.iso",
-      "iso_checksum": "08be09fd7276822bd3468af8f96198279ffc41f0",
+      "iso_url": "http://centos.mirror.rafal.ca/6.7/isos/x86_64/CentOS-6.7-x86_64-bin-DVD1.iso",
+      "iso_checksum": "7bb8c1c23a4fdef93e6f0a6347d570e5764d0b38",
       "iso_checksum_type": "sha1",
+      "ssh_pty": "true",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_wait_timeout": "60m",
@@ -26,14 +27,15 @@
     },
     {
       "type": "virtualbox-iso",
-      "name": "centos66-vbox-x64",
-      "vm_name": "centos66-x64",
+      "name": "centos67-vbox-x64",
+      "vm_name": "centos67-x64",
       "headless": false,
       "disk_size": 16384,
       "guest_os_type": "RedHat_64",
-      "iso_url": "file:///Volumes/Storage/Isos/CentOS/CentOS-6.6-x86_64-bin-DVD1.iso",
-      "iso_checksum": "08be09fd7276822bd3468af8f96198279ffc41f0",
+      "iso_url": "http://centos.mirror.rafal.ca/6.7/isos/x86_64/CentOS-6.7-x86_64-bin-DVD1.iso",
+      "iso_checksum": "7bb8c1c23a4fdef93e6f0a6347d570e5764d0b38",
       "iso_checksum_type": "sha1",
+      "ssh_pty": "true",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_wait_timeout": "60m",
@@ -59,10 +61,10 @@
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "override": {
-        "centos66-ovf-x64": {
-          "script": "scripts/centos/centos-vmware-tools_install.sh"
+        "centos67-ovf-x64": {
+          "script": "scripts/centos/centos-open-vm-tools_install.sh"
         },
-        "centos66-vbox-x64": {
+        "centos67-vbox-x64": {
           "script": "scripts/centos/centos-virtualbox-guest-additions_install.sh"          
         }
       }
@@ -80,7 +82,7 @@
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "script": "scripts/centos/centos-vmware-vcloud_cleanup.sh",
-      "only": ["centos66-ovf-x64"]
+      "only": ["centos67-ovf-x64"]
     }
   ],
 
@@ -88,12 +90,14 @@
    {
      "type": "vagrant",
      "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box",
-     "only": ["centos66-vbox-x64"]
+     "compression_level": 9,
+     "only": ["centos67-vbox-x64"]
    },
    {
      "type": "vagrant-vmware-ovf",
      "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box",
-     "only": ["centos66-ovf-x64"]
+     "compression_level": 9,
+     "only": ["centos67-ovf-x64"]
    }
   ]
 }
