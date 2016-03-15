@@ -1,10 +1,8 @@
-packer-templates
+packer-templates for vagrant-vcenter plugin (and virtualbox)
 ================
 
-packer-templates to create vmware_ovf and virtualbox templates for the following distros.
+packer-templates to create vmware_ovf and virtualbox templates.
 
-Virtualbox guest additions or open-vm-tools are installed.
-Puppet is installed.
 
 ###Boxes
 
