@@ -11,15 +11,8 @@ packer-templates to create vmware_ovf and virtualbox templates.
 #### 3. Ubuntu Trusty x64
 
 
-### What these boxes include.
-#### 1. system packages are updated.
-#### 2. vm guest tools are installed (virtualbox or open-vm-tools)
-#### 3. puppet
+You will need Virtualbox, Vmware-fusion, the Vagrant [vmware_ovf post processor](https://github.com/frapposelli/packer-post-processor-vagrant-vmware-ovf), and [ovftool](https://www.vmware.com/support/developer/ovf/) installed to create these boxes.
 
 
-
-You will virtualbox, vmware-fusion, the Vagrant [vmware_ovf post processor](https://github.com/frapposelli/packer-post-processor-vagrant-vmware-ovf), and [ovftool](https://www.vmware.com/support/developer/ovf/) installed to create these boxes.
-
-
-You will also need the vagrant-vcenter plugin https://github.com/frapposelli/vagrant-vcenter to use these boxes.
+You will also need the vagrant-vcenter plugin https://github.com/frapposelli/vagrant-vcenter to use the vmware_ovf boxes..
 
