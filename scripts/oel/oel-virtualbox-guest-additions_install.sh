@@ -1,6 +1,6 @@
 #clean yum history and install prereqs
 yum history new
-yum install kernel-uek-devel -y
+yum install kernel-uek-devel gcc -y
 
 #mount vbox additions and install
 cd /tmp
