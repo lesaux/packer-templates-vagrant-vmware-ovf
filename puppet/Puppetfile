@@ -1,0 +1,15 @@
+# Common
+mod 'puppetlabs/stdlib'
+mod 'wolfspyre/vmware_puppetfact'
+mod 'puppetlabs/apt'
+mod 'razorsedge/vmwaretools'
+mod 'stahnma/epel'
+
+#mod 'razorsedge/openvmtools'
+
+mod 'openvmtools',
+  :git => 'https://github.com/lesaux/puppet-openvmtools.git',
+  :branch => 'develop'
+
+mod 'vagrantbaseconfig',
+  :git => 'https://github.com/lesaux/puppet-vagrantbaseconfig.git'

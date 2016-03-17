@@ -5,15 +5,16 @@
   "builders": [
     {
       "type": "vmware-iso",
-      "name": "oel66-ovf-x64",
-      "vm_name": "oel66-x64",
-      "vmdk_name": "oel66-x64-disk0",
-      "headless": true,
+      "name": "oel67-ovf-x64",
+      "vm_name": "oel67-x64",
+      "vmdk_name": "oel67-x64-disk0",
+      "headless": false,
       "disk_size": 16384,
       "guest_os_type": "rhel6-64",
-      "iso_url": "file:///Volumes/Storage/Isos/Oracle-Linux-6.6-x86_64.iso",
-      "iso_checksum": "5738F10A506D3630EDFD297EF179B553091C6A48",
+      "iso_url": "http://download.linuxdataflow.org/index.php/s/7KBbtElEoOoIozE/download?path=%2F&files=Oracle-Linux-6.7-x86_64.iso",
+      "iso_checksum": "dd7231b378f23e2e846ac78b0c5d8974a23631d5",
       "iso_checksum_type": "sha1",
+      "ssh_pty": "true",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_wait_timeout": "60m",
@@ -21,26 +22,27 @@
       "http_directory": ".",
       "tools_upload_flavor": "linux",
       "boot_command": [
-        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/vagrant-centos-6-kickstart.cfg<enter><wait>"
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/oel/oel-6-kickstart.cfg<enter><wait>"
       ]
     },
     {
       "type": "virtualbox-iso",
-      "name": "oel66-vbox-x64",
-      "vm_name": "oel66-x64",
-      "headless": true,
+      "name": "oel67-vbox-x64",
+      "vm_name": "oel67-x64",
+      "headless": false,
       "disk_size": 16384,
       "guest_os_type": "RedHat_64",
-      "iso_url": "file:///Volumes/Storage/Isos/Oracle-Linux-6.6-x86_64.iso",
-      "iso_checksum": "5738F10A506D3630EDFD297EF179B553091C6A48",
+      "iso_url": "http://download.linuxdataflow.org/index.php/s/7KBbtElEoOoIozE/download?path=%2F&files=Oracle-Linux-6.7-x86_64.iso",
+      "iso_checksum": "dd7231b378f23e2e846ac78b0c5d8974a23631d5",
       "iso_checksum_type": "sha1",
+      "ssh_pty": "true",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_wait_timeout": "60m",
       "shutdown_command": "echo 'vagrant' | sudo -S /sbin/shutdown -P now",
       "http_directory": ".",
       "boot_command": [
-        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/vagrant-centos-6-kickstart.cfg<enter><wait>"
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/oel/oel-6-kickstart.cfg<enter><wait>"
       ],
       "virtualbox_version_file": ".vbox_version",
       "vboxmanage": [
@@ -57,15 +59,17 @@
     },
     {
       "type": "shell",
+      "only": ["oel67-vbox-x64"],
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
-      "override": {
-        "oel66-ovf-x64": {
-          "script": "scripts/centos-vmware-tools_install.sh"
-        },
-        "oel66-vbox-x64": {
-          "script": "scripts/oel-virtualbox-guest-additions_install.sh"          
-        }
-      }
+      "script": "scripts/oel/oel-virtualbox-guest-additions_install.sh"
+    },
+    {
+      "type": "puppet-masterless",
+      "only": ["oel67-ovf-x64"],
+      "manifest_file": "puppet/manifests/openvmtools.pp",
+      "manifest_dir": "puppet/manifests",
+      "module_paths": [ "puppet/modules" ],
+      "execute_command": "{{.FacterVars}}{{if .Sudo}} echo 'vagrant' | sudo -E -S {{end}} puppet apply --verbose --modulepath='{{.ModulePath}}' {{if ne .HieraConfigPath \"\"}}--hiera_config='{{.HieraConfigPath}}' {{end}} {{if ne .ManifestDir \"\"}}--manifestdir='{{.ManifestDir}}' {{end}} --detailed-exitcodes {{.ManifestFile}}"
     },
     {
       "type": "puppet-masterless",
@@ -79,8 +83,7 @@
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
-      "script": "scripts/centos-vmware-vcloud_cleanup.sh",
-      "only": ["oel66-ovf-x64"]
+      "script": "scripts/oel/oel_cleanup.sh"
     }
   ],
 
@@ -88,12 +91,14 @@
    {
      "type": "vagrant",
      "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box",
-     "only": ["oel66-vbox-x64"]
+     "compression_level": 9,
+     "only": ["oel67-vbox-x64"]
    },
    {
      "type": "vagrant-vmware-ovf",
      "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box",
-     "only": ["oel66-ovf-x64"]
+     "compression_level": 9,
+     "only": ["oel67-ovf-x64"]
    }
   ]
 }

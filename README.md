@@ -17,6 +17,7 @@ packer-templates to create vmware_ovf and virtualbox templates.
 #### 3. puppet
 
 
+You'll want to have r10k and run `r10k puppetfile install` in the puppet dir to download the required puppet modules
 
 You will virtualbox, vmware-fusion, the Vagrant [vmware_ovf post processor](https://github.com/frapposelli/packer-post-processor-vagrant-vmware-ovf), and [ovftool](https://www.vmware.com/support/developer/ovf/) installed to create these boxes.
 

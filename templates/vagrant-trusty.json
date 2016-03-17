@@ -1,0 +1,119 @@
+{
+  "variables": {
+    "version": "0.0.2"
+  },
+  "builders": [
+    {
+      "name": "trusty-ovf-x64",
+      "vm_name": "trusty-x64",
+      "vmdk_name": "trusty64-disk0",
+      "type": "vmware-iso",
+      "headless": false,
+      "disk_size": 16384,
+      "guest_os_type": "ubuntu-64",
+      "iso_url": "http://ubuntu.mirror.rafal.ca/releases/14.04.4/ubuntu-14.04.4-server-amd64.iso",
+      "iso_checksum": "3ffb7a3690ce9a07ac4a4d1b829f990681f7e47d",
+      "iso_checksum_type": "sha1",
+      "ssh_pty": "true",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "60m",
+      "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now",
+      "http_directory": ".",
+      "tools_upload_flavor": "linux",
+      "boot_command": [
+        "<esc><esc><enter><wait>",
+        "/install/vmlinuz noapic ",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/ubuntu/ubuntu-preseed.cfg ",
+        "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+        "hostname=trusty64 ",
+        "fb=false debconf/frontend=noninteractive ",
+        "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+        "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+        "initrd=/install/initrd.gz -- <enter>"
+      ]
+    },
+    {
+      "name": "trusty-vbox-x64",
+      "vm_name": "trusty-x64",
+      "type": "virtualbox-iso",
+      "headless": false,
+      "disk_size": 16384,
+      "guest_os_type": "Ubuntu_64",
+      "iso_url": "http://ubuntu.mirror.rafal.ca/releases/14.04.4/ubuntu-14.04.4-server-amd64.iso",
+      "iso_checksum": "3ffb7a3690ce9a07ac4a4d1b829f990681f7e47d",
+      "iso_checksum_type": "sha1",
+      "ssh_pty": "true",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "60m",
+      "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now",
+      "http_directory": ".",
+      "boot_command": [
+        "<esc><esc><enter><wait>",
+        "/install/vmlinuz noapic ",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/ubuntu/ubuntu-preseed.cfg ",
+        "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+        "hostname=trusty64 ",
+        "fb=false debconf/frontend=noninteractive ",
+        "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+        "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+        "initrd=/install/initrd.gz -- <enter>"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "script": "scripts/ubuntu/apt-updates.sh"
+    },
+    {
+      "type": "shell",
+      "only": ["trusty-vbox-x64"],
+      "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "script": "scripts/ubuntu/ubuntu-virtualbox-guest-additions_install.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "script": "scripts/ubuntu/ubuntu-puppet_install.sh"
+    },
+    {
+      "type": "puppet-masterless",
+      "only": ["trusty-ovf-x64"],
+      "manifest_file": "puppet/manifests/openvmtools.pp",
+      "manifest_dir": "puppet/manifests",
+      "module_paths": [ "puppet/modules" ],
+      "execute_command": "{{.FacterVars}}{{if .Sudo}} echo 'vagrant' | sudo -E -S {{end}} puppet apply --verbose --modulepath='{{.ModulePath}}' {{if ne .HieraConfigPath \"\"}}--hiera_config='{{.HieraConfigPath}}' {{end}} {{if ne .ManifestDir \"\"}}--manifestdir='{{.ManifestDir}}' {{end}} --detailed-exitcodes {{.ManifestFile}}"
+    },
+    {
+      "type": "puppet-masterless",
+      "execute_command": "{{.FacterVars}}{{if .Sudo}} echo 'vagrant' | sudo -E -S {{end}} puppet apply --verbose --modulepath='{{.ModulePath}}' {{if ne .HieraConfigPath \"\"}}--hiera_config='{{.HieraConfigPath}}' {{end}} {{if ne .ManifestDir \"\"}}--manifestdir='{{.ManifestDir}}' {{end}} --detailed-exitcodes {{.ManifestFile}}",
+      "manifest_file": "puppet/manifests/vagrant.pp",
+      "manifest_dir": "puppet/manifests",
+      "module_paths": [
+        "puppet/modules"
+      ] 
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "script": "scripts/ubuntu/ubuntu-vmware-vcloud_cleanup.sh"
+    }
+  ],
+ "post-processors": [
+   {
+     "type": "vagrant",
+     "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box",
+     "compression_level": 9,
+     "only": ["trusty-vbox-x64"]
+   },
+   {
+     "type": "vagrant-vmware-ovf",
+     "output": "{{.BuildName}}-{{.Provider}}-{{user `version`}}.box",
+     "compression_level": 9,
+     "only": ["trusty-ovf-x64"]
+   }
+ ]
+}

@@ -1,6 +1,6 @@
 {
   "variables": {
-    "version": "0.0.1"
+    "version": "0.0.3"
   },
   "builders": [
     {
@@ -20,7 +20,6 @@
       "ssh_wait_timeout": "60m",
       "shutdown_command": "echo 'vagrant' | sudo -S /sbin/shutdown -P now",
       "http_directory": ".",
-      "tools_upload_flavor": "linux",
       "boot_command": [
         "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/scripts/centos/vagrant-centos-6-kickstart.cfg<enter><wait>"
       ]
@@ -59,30 +58,29 @@
     },
     {
       "type": "shell",
+      "only": ["centos67-vbox-x64"],
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
-      "override": {
-        "centos67-ovf-x64": {
-          "script": "scripts/centos/centos-open-vm-tools_install.sh"
-        },
-        "centos67-vbox-x64": {
-          "script": "scripts/centos/centos-virtualbox-guest-additions_install.sh"          
-        }
-      }
+      "script": "scripts/centos/centos-virtualbox-guest-additions_install.sh"          
+    },
+    {
+      "type": "puppet-masterless",
+      "only": ["centos67-ovf-x64"],
+      "manifest_file": "puppet/manifests/openvmtools.pp",
+      "manifest_dir": "puppet/manifests",
+      "module_paths": [ "puppet/modules" ],
+      "execute_command": "{{.FacterVars}}{{if .Sudo}} echo 'vagrant' | sudo -E -S {{end}} puppet apply --verbose --modulepath='{{.ModulePath}}' {{if ne .HieraConfigPath \"\"}}--hiera_config='{{.HieraConfigPath}}' {{end}} {{if ne .ManifestDir \"\"}}--manifestdir='{{.ManifestDir}}' {{end}} --detailed-exitcodes {{.ManifestFile}}"
     },
     {
       "type": "puppet-masterless",
       "execute_command": "{{.FacterVars}}{{if .Sudo}} echo 'vagrant' | sudo -E -S {{end}} puppet apply --verbose --modulepath='{{.ModulePath}}' {{if ne .HieraConfigPath \"\"}}--hiera_config='{{.HieraConfigPath}}' {{end}} {{if ne .ManifestDir \"\"}}--manifestdir='{{.ManifestDir}}' {{end}} --detailed-exitcodes {{.ManifestFile}}",
       "manifest_file": "puppet/manifests/vagrant.pp",
       "manifest_dir": "puppet/manifests",
-      "module_paths": [
-        "puppet/modules"
-      ] 
+      "module_paths": [ "puppet/modules" ]
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
-      "script": "scripts/centos/centos-vmware-vcloud_cleanup.sh",
-      "only": ["centos67-ovf-x64"]
+      "script": "scripts/centos/centos-vmware-vcloud_cleanup.sh"
     }
   ],
 

@@ -2,3 +2,4 @@
 packer_cache
 puppet/modules/*
 *.box
+vagrant_box_add
