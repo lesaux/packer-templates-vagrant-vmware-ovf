@@ -76,16 +76,14 @@
     },
     {
       "type": "shell",
+      "only": ["trusty-ovf-x64"],
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
-      "script": "scripts/ubuntu/ubuntu-puppet_install.sh"
+      "script": "scripts/ubuntu/ubuntu-vmware-tools_install.sh"
     },
     {
-      "type": "puppet-masterless",
-      "only": ["trusty-ovf-x64"],
-      "manifest_file": "puppet/manifests/openvmtools.pp",
-      "manifest_dir": "puppet/manifests",
-      "module_paths": [ "puppet/modules" ],
-      "execute_command": "{{.FacterVars}}{{if .Sudo}} echo 'vagrant' | sudo -E -S {{end}} puppet apply --verbose --modulepath='{{.ModulePath}}' {{if ne .HieraConfigPath \"\"}}--hiera_config='{{.HieraConfigPath}}' {{end}} {{if ne .ManifestDir \"\"}}--manifestdir='{{.ManifestDir}}' {{end}} --detailed-exitcodes {{.ManifestFile}}"
+      "type": "shell",
+      "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "script": "scripts/ubuntu/ubuntu-puppet_install.sh"
     },
     {
       "type": "puppet-masterless",

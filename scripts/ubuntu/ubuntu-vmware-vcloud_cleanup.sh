@@ -28,17 +28,17 @@ if [ ! -d "/etc/dhcp3" ]; then
   fi
 fi
 
-#echo "Writing a fixed eth0 entry to avoid delay on first boot in vCloud"
-#cat <<CFG | tee /etc/network/interfaces
-#auto lo
-#iface lo inet loopback
-#auto eth0
-#iface eth0 inet static
-#  address 192.168.66.111
-#        netmask 255.255.255.0
-#        gateway 192.168.66.1
-#        metric 0
-#CFG
+echo "Writing a fixed eth0 entry to avoid delay on first boot in vCloud"
+cat <<CFG | tee /etc/network/interfaces
+auto lo
+iface lo inet loopback
+auto eth0
+iface eth0 inet static
+  address 192.168.66.111
+        netmask 255.255.255.0
+        gateway 192.168.66.1
+        metric 0
+CFG
 
 echo "==> Removing network-manager (KB2042181)"
 apt-get remove --purge network-manager
