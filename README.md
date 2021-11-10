@@ -4,7 +4,7 @@ packer-templates for vagrant-vcenter plugin (and virtualbox)
 packer-templates to create vmware_ovf and virtualbox templates.
 
 
-###Boxes
+### Boxes
 
 #### 1. Oracle Enterprise Linux 6.6 x64
 #### 2. CentOS 6.7 x64
